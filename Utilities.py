@@ -1,4 +1,5 @@
 import pandas as pd
+import geopands as gpd
 
 
 class Utils:
@@ -28,3 +29,5 @@ class Utils:
             filter = filter & (data != c)
 
         return data[filter.all(1)]
+
+    
