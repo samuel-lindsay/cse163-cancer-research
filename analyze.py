@@ -5,6 +5,7 @@ AGE_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYAGE.TXT"
 AREA_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYAREA.TXT"
 COUNTY_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYAREA_COUNTY.TXT"
 
+
 def state_change(data):
     data = data[['AREA', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE', 'RACE', 'SEX', 'SITE', 'YEAR']]
     data = data[(data["SITE"] == "All Cancer Sites Combined") & (data["SEX"] == "Male and Female")]
@@ -13,7 +14,7 @@ def state_change(data):
                         'AGE_ADJUSTED_RATE')
     data = data[["AREA", "YEAR", "MIR"]]
     grouped = data.groupby(by="AREA")
-    state_change = grouped['MIR'].first() - grouped['MIR'].last()
+    state_change = (grouped['MIR'].last() - grouped['MIR'].first()) / grouped['MIR'].last()
     return state_change
 
 
