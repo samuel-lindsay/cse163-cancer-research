@@ -24,11 +24,11 @@ def state_change(data):
 
 
 def prepare_shp(by_county, counties):
-    by_county = Utils.remove_rows(data=by_county, chars=['~', '+', '.', '-'])
+    by_county = Utils.remove_rows(data=by_county, chars=['~', '.', '-'])
     by_county = Utils.get_mir(data=by_county, 
                               on=['AREA', 'RACE', 'SEX', 'SITE', 'YEAR'],
                               rate_col='AGE_ADJUSTED_RATE')
-    prepared_shp = Utils.clean_join_shp(by_county, counties)
+    prepared_shp = Utils.clean_join_shp(by_county=by_county, counties=counties)
     return prepared_shp
 
 

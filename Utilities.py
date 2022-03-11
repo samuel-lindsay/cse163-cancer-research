@@ -2,7 +2,9 @@ import pandas as pd
 import geopandas as gpd
 # from utilities_helper import strip_county_name
 
+
 class Utils:
+
     def get_mir(data, on, rate_col):
         """
         Takes in the already cleaned data. Given a set of columns to merge
@@ -16,8 +18,7 @@ class Utils:
         incidence = data[data["EVENT_TYPE"] == "Incidence"]
         joined = pd.merge(mortality, incidence, how='inner', on=on)
         joined["MIR"] = joined[rate_col + "_x"] / joined[rate_col + "_y"]
-        return joined
-
+        return joined.loc[:, ~joined.columns.duplicated()]
 
     def remove_rows(data, chars):
         """
@@ -25,12 +26,11 @@ class Utils:
         Used to clean out the 4 characters that are all used to represent
         a NA value.
         """
-        filter = data != chars[0]  # get base filter
+        check = data != chars[0]  # get base filter
         for c in chars:
-            filter = filter & (data != c)
+            check = check & (data != c)
 
-        return data[filter.all(1)]
-
+        return data[check.all(1)]
 
     def _strip_county_name(area):
         """
@@ -39,9 +39,8 @@ class Utils:
         cleans the entry to match the format in counties GeoDataFrame.
         """
         elements = area.split(":")
-        county = elements[0] +" " + elements[1].split("(")[0].strip()
+        county = str(elements[0] + " " + elements[1].split("(")[0].strip())
         return county
-
 
     def clean_join_shp(by_county, counties):
         """
