@@ -1,6 +1,6 @@
 import pandas as pd
-import geopands as gpd
-
+import geopandas as gpd
+# from utilities_helper import strip_county_name
 
 class Utils:
     def get_mir(data, on, rate_col):
@@ -18,6 +18,7 @@ class Utils:
         joined["MIR"] = joined[rate_col + "_x"] / joined[rate_col + "_y"]
         return joined
 
+
     def remove_rows(data, chars):
         """
         Filters rows based on a set of characters.
@@ -30,4 +31,31 @@ class Utils:
 
         return data[filter.all(1)]
 
-    
+
+    def _strip_county_name(area):
+        """
+        This method is a helper to function clean_join_shp.
+        It takes a single entry from the by_county DataFrame and
+        cleans the entry to match the format in counties GeoDataFrame.
+        """
+        elements = area.split(":")
+        county = elements[0] +" " + elements[1].split("(")[0].strip()
+        return county
+
+
+    def clean_join_shp(by_county, counties):
+        """
+        Takes a Dataframe by_county and a GeoDataFrame counties as input.
+        Returns a new GeoDataFrame prepared_shp. This function joins the
+        rows from two dataset on their county names for further plotting
+        operations.
+        """
+        helper = "_strip_county_name"
+        by_county.loc[:, "county"] = by_county.loc[:, "AREA"].apply(helper)
+        counties.loc[:, "county"] = counties.loc[:, "STUSPS"] + \
+                                    " " + counties.loc[:, "NAMELSAD"]
+        by_county_c = by_county.astype({"county": "str"}, copy=True)
+        counties_c = counties.astype({"county": "str"}, copy=True)
+        prepared_shp = counties_c.merge(by_county_c, left_on="county",
+                                        right_on="county", how="left")
+        return prepared_shp
