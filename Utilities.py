@@ -18,7 +18,7 @@ class Utils:
         incidence = data[data["EVENT_TYPE"] == "Incidence"]
         joined = pd.merge(mortality, incidence, how='inner', on=on)
         joined["MIR"] = joined[rate_col + "_x"] / joined[rate_col + "_y"]
-        return joined.loc[:, ~joined.columns.duplicated()]
+        return joined #.loc[:, ~joined.columns.duplicated()]
 
     def remove_rows(data, chars):
         """
@@ -38,7 +38,7 @@ class Utils:
         It takes a single entry from the by_county DataFrame and
         cleans the entry to match the format in counties GeoDataFrame.
         """
-        elements = area.split(":")
+        elements = str(area).split(":")
         county = str(elements[0] + " " + elements[1].split("(")[0].strip())
         return county
 
@@ -49,8 +49,8 @@ class Utils:
         rows from two dataset on their county names for further plotting
         operations.
         """
-        helper = "_strip_county_name"
-        by_county.loc[:, "county"] = by_county.loc[:, "AREA"].apply(helper)
+        helper = "Utils._strip_county_name"
+        by_county.loc[:, "county"] = by_county.loc[:, "AREA"].apply(Utils._strip_county_name)
         counties.loc[:, "county"] = counties.loc[:, "STUSPS"] + \
                                     " " + counties.loc[:, "NAMELSAD"]
         by_county_c = by_county.astype({"county": "str"}, copy=True)

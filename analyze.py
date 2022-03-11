@@ -1,6 +1,7 @@
 import pandas as pd
 import geopandas as gpd
 from utilities import Utils
+import matplotlib.pyplot as plt
 # from utilities import get_mir, remove_rows, clean_join_shp
 
 AREA_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYAREA.TXT"
@@ -47,12 +48,15 @@ def main():
     prepared_shp = prepare_shp(by_county, counties)
     no_ak = prepared_shp["STUSPS"] != "AK"
     no_hi = prepared_shp["STUSPS"] != "HI"
-    all_races = prepared_shp["RACE"] == "All Races"
+    # all_races = prepared_shp["RACE"] == "White"
     all_cancer_sites = prepared_shp["SITE"] == "All Cancer Sites Combined"
-    both_sexes = prepared_shp["SEX"] == "Female"    
-    mortality = prepared_shp["EVENT_TYPE"] == "Mortality"
-    test_plot = prepared_shp[all_races & all_cancer_sites & both_sexes & mortality & no_ak & no_hi]
-    test_plot.plot(figsize=(250, 500))
+    #both_sexes = prepared_shp["SEX"] == "Male and Female"    
+    # mortality = prepared_shp["EVENT_TYPE"] == "Mortality"
+    # test_plot = prepared_shp[all_races & all_cancer_sites & both_sexes & no_ak & no_hi]
+    # test_plot.plot() #figsize=(250, 500))
+    prepared_shp[no_ak & no_hi & all_cancer_sites].plot(figsize=(50, 20))
+    plt.savefig("test_plot.png")
+    print(prepared_shp["STUSPS"].unique())
 
 
 if __name__ == "__main__":
