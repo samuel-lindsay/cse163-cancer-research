@@ -1,6 +1,5 @@
 import pandas as pd
 import geopandas as gpd
-# from utilities_helper import strip_county_name
 
 
 class Utils:
@@ -18,7 +17,7 @@ class Utils:
         incidence = data[data["EVENT_TYPE"] == "Incidence"]
         joined = pd.merge(mortality, incidence, how='inner', on=on)
         joined["MIR"] = joined[rate_col + "_x"] / joined[rate_col + "_y"]
-        return joined #.loc[:, ~joined.columns.duplicated()]
+        return joined
 
     def remove_rows(data, chars):
         """
@@ -26,10 +25,9 @@ class Utils:
         Used to clean out the 4 characters that are all used to represent
         a NA value.
         """
-        check = data != chars[0]  # get base filter
+        check = data != chars[0]
         for c in chars:
             check = check & (data != c)
-
         return data[check.all(1)]
 
     def _strip_county_name(area):
@@ -38,9 +36,8 @@ class Utils:
         It takes a single entry from the by_county DataFrame and
         cleans the entry to match the format in counties GeoDataFrame.
         """
-        elements = str(area).split(":")
-        county = str(elements[0] + " " + elements[1].split("(")[0].strip())
-        return county
+        geoid = area[area.index("(") + 1: area.index(")")].strip()
+        return geoid
 
     def clean_join_shp(by_county, counties):
         """
@@ -49,12 +46,10 @@ class Utils:
         rows from two dataset on their county names for further plotting
         operations.
         """
-        helper = "Utils._strip_county_name"
-        by_county.loc[:, "county"] = by_county.loc[:, "AREA"].apply(Utils._strip_county_name)
-        counties.loc[:, "county"] = counties.loc[:, "STUSPS"] + \
-                                    " " + counties.loc[:, "NAMELSAD"]
-        by_county_c = by_county.astype({"county": "str"}, copy=True)
-        counties_c = counties.astype({"county": "str"}, copy=True)
-        prepared_shp = counties_c.merge(by_county_c, left_on="county",
-                                        right_on="county", how="left")
+        by_county.loc[:, "geoid"] = by_county.loc[:, "AREA"] \
+                                             .apply(Utils._strip_county_name)
+        by_county = by_county.astype({"geoid": "float32"})
+        counties = counties.astype({"GEOID": "float32"})
+        prepared_shp = counties.merge(by_county, left_on="GEOID",
+                                      right_on="geoid", how="left")
         return prepared_shp
