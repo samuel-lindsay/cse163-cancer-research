@@ -1,7 +1,6 @@
 import pandas as pd
 import geopandas as gpd
 from utilities import Utils
-import altair as alt
 
 
 AREA_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYAREA.TXT"
@@ -10,10 +9,13 @@ SHP_DATA_PATH = "data\\2020_us_county_shp\\cb_2020_us_county_20m.shp"
 
 
 def state_change(data):
+    """
+    """
     data = data[['AREA', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE',
                  'RACE', 'SEX', 'SITE', 'YEAR']]
     data = data[(data["SITE"] == "All Cancer Sites Combined") &
-                (data["SEX"] == "Male and Female")]
+                (data["SEX"] == "Male and Female") &
+                (data["RACE"] == "All Races")]
     data = Utils.remove_rows(data=data, chars=['~', '+', '.', '-'])
     data = Utils.get_mir(data=data,
                          on=['AREA', 'RACE', 'SEX', 'SITE', 'YEAR'],
@@ -22,6 +24,26 @@ def state_change(data):
     grouped = data.groupby(by="AREA")
     state_change = (grouped['MIR'].last() - grouped['MIR'].first()) / grouped['MIR'].last()
     return state_change
+
+
+def cancer_change(data):
+    """
+    This function takes in a DataFrame data and returns a list of MIR
+    percentage change between 2018 and 1999 for each type of cancer.
+    Here, we only consider the data for all races and all sexes combined
+    as they cover the most portion of population in our dataset.
+    """
+    data = data[['AREA', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE',
+                 'RACE', 'SEX', 'SITE', 'YEAR']]
+    data = data[(data["SITE"] == "All Cancer Sites Combined") &
+                (data["SEX"] == "Male and Female") &
+                (data["RACE"] == "All Races")]
+    data = Utils.remove_rows(data=data, chars=['~', '+', '.', '-'])
+    data = Utils.get_mir(data=data,
+                         on=['AREA', 'RACE', 'SEX', 'SITE', 'YEAR'],
+                         rate_col='AGE_ADJUSTED_RATE')
+    data = data[["YEAR", "MIR", "SITE"]]
+    return None
 
 
 def create_interactive(by_county, counties):
