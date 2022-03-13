@@ -4,6 +4,7 @@ from utilities import Utils
 
 
 AREA_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYAREA.TXT"
+SITE_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYSITE.TXT"
 COUNTY_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYAREA_COUNTY.TXT"
 SHP_DATA_PATH = "data\\2020_us_county_shp\\cb_2020_us_county_20m.shp"
 
@@ -11,18 +12,19 @@ SHP_DATA_PATH = "data\\2020_us_county_shp\\cb_2020_us_county_20m.shp"
 def state_change(data):
     """
     """
-    data = data[['AREA', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE',
-                 'RACE', 'SEX', 'SITE', 'YEAR']]
     data = data[(data["SITE"] == "All Cancer Sites Combined") &
                 (data["SEX"] == "Male and Female") &
                 (data["RACE"] == "All Races")]
+    data = data[['AREA', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE', 'YEAR']]
     data = Utils.remove_rows(data=data, chars=['~', '+', '.', '-'])
     data = Utils.get_mir(data=data,
-                         on=['AREA', 'RACE', 'SEX', 'SITE', 'YEAR'],
+                         on=['AREA', 'YEAR'],
                          rate_col='AGE_ADJUSTED_RATE')
     data = data[["AREA", "YEAR", "MIR"]]
+    data = data.sort_values(["YEAR"])
+    Utils.make_state_plot(data)
     grouped = data.groupby(by="AREA")
-    state_change = (grouped['MIR'].last() - grouped['MIR'].first()) / grouped['MIR'].last()
+    state_change = (grouped['MIR'].last() - grouped['MIR'].first()) / grouped['MIR'].first()
     return state_change
 
 
@@ -33,17 +35,19 @@ def cancer_change(data):
     Here, we only consider the data for all races and all sexes combined
     as they cover the most portion of population in our dataset.
     """
-    data = data[['AREA', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE',
-                 'RACE', 'SEX', 'SITE', 'YEAR']]
-    data = data[(data["SITE"] == "All Cancer Sites Combined") &
-                (data["SEX"] == "Male and Female") &
+    data = data[(data["SEX"] == "Male and Female") &
                 (data["RACE"] == "All Races")]
+    data = data[['SITE', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE', 'YEAR']]
     data = Utils.remove_rows(data=data, chars=['~', '+', '.', '-'])
     data = Utils.get_mir(data=data,
-                         on=['AREA', 'RACE', 'SEX', 'SITE', 'YEAR'],
+                         on=['SITE', 'YEAR'],
                          rate_col='AGE_ADJUSTED_RATE')
     data = data[["YEAR", "MIR", "SITE"]]
-    return None
+    data = data.sort_values(["YEAR"])
+    Utils.make_state_plot(data)
+    grouped = data.groupby(by="SITE")
+    cancer_change = (grouped['MIR'].last() - grouped['MIR'].first()) / grouped['MIR'].first()
+    return cancer_change
 
 
 def create_interactive(by_county, counties):
@@ -70,16 +74,23 @@ def create_interactive(by_county, counties):
 
 def main():
     by_area = pd.read_csv(AREA_DATA_PATH, sep="|", low_memory=False)
+    by_site = pd.read_csv(SITE_DATA_PATH, sep="|", low_memory=False)
     by_county = pd.read_csv(COUNTY_DATA_PATH, sep="|", low_memory=False)
     counties = gpd.read_file(SHP_DATA_PATH)
-    change = state_change(by_area)
+    
+    change_by_state = state_change(by_area)
+    print("Greatest change_by_state in MIR: " + str(change_by_state.idxmax()) +
+          " " + str(change_by_state.max()))
+    print("Smallest change_by_state in MIR: " + str(change_by_state.idxmin()) +
+          " " + str(change_by_state.min()))
 
-    print("Greatest change in MIR: " + str(change.idxmax()) +
-          " " + str(change.max()))
-    print("Smallest change in MIR: " + str(change.idxmin()) +
-          " " + str(change.min()))
+    change_by_cancer = cancer_change(by_site)
+    print("Greatest change_by_cancer in MIR: " + str(change_by_cancer.idxmax()) +
+          " " + str(change_by_cancer.max()))
+    print("Smallest change_by_cancer in MIR: " + str(change_by_cancer.idxmin()) +
+          " " + str(change_by_cancer.min()))
 
-    create_interactive(by_county, counties)
+    # create_interactive(by_county, counties)
     # print(len(prepared_shp["MIR"]))
     # no_ak = prepared_shp["STUSPS"] != "AK"
     # no_hi = prepared_shp["STUSPS"] != "HI"

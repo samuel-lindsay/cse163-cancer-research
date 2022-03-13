@@ -1,3 +1,4 @@
+from matplotlib.pyplot import legend
 import pandas as pd
 import geopandas as gpd
 import altair as alt
@@ -97,7 +98,6 @@ class Utils:
            .transform_filter(race_select) \
            .properties(title="Mortality Incidence Rate for US counties (2014-2018)")
 
-
         # filter_races = mir_highlight.add_selection(race_select) \
         #                             .transform_filter(race_select) \
         #                             .properties(title="Race Filtering")
@@ -108,22 +108,23 @@ class Utils:
     def make_state_plot(data):
         """
         Takes in state-level data that has already been cleaned, filtered,
-        and given an MIR column. Then creates an altair chart out of
+        and given an MIR column. Then creates an interactive altair line
+        chart out of the changes in MIR among all 50 states and DC from
+        1999 to 2018.
         """
         data = data.sort_values(['YEAR'])
         states = data["AREA"].unique()
         states.sort()
         state_dropdown = alt.binding_select(options=states)
         state_select = alt.selection_single(fields=['AREA'], bind=state_dropdown, name="State")
-        state_color_condition = alt.condition(state_select, alt.Color('AREA:N', legend=None), alt.value('lightgray'))
+        # state_color_condition = alt.condition(state_select, alt.Color('AREA:N', legend=None), alt.value('lightgray'))
         background_chart = alt.Chart(data).mark_line().encode(
             x='YEAR',
             y='MIR',
             detail="AREA",
             tooltip="AREA",
-        ).add_selection(state_select).encode(
-            color=state_color_condition
-        )
+            color = alt.value("lightgray")
+        ).add_selection(state_select)
         selected_state = alt.Chart(data).mark_line().encode(
             x='YEAR',
             y=alt.Y('MIR', scale=alt.Scale(domain=[0.275, 0.55])),
@@ -135,4 +136,42 @@ class Utils:
         ).transform_filter(
             state_select
         )
-        return background_chart + selected_state
+        (background_chart + selected_state).save("test_state_plot.html")
+
+    def make_cancer_plot(data):
+        """
+        Takes in a DataFrame data which is cleaned, filtered, given
+        an MIR column, and grouped by cancer types. Then creates an
+        interactive altair line chart out of the changes in MIR among
+        all kinds of cancers from 1999 to 2018.
+        """
+        data = data.sort_values(["YEAR"])
+        cancers = data["SITE"].unique()
+        cancers.sort()
+        cancer_dropdown = alt.binding_select(options=cancers)
+        cancer_select = alt.selection_single(fields=["SITE"],
+                                             bind=cancer_dropdown,
+                                             name="Cancer Type")
+        cancer_color_condition = alt.condition(cancer_select,
+                                               alt.COlor("SITE:N", legend=None),
+                                               alt.value("lightgray"))
+        background_chart = alt.Chart(data).mark_line().encode(
+            x="YEAR",
+            y="MIR",
+            detail="SITE",
+            tooltip="SITE",
+        ).add_selection(cancer_select).encode(
+            color=cancer_color_condition
+        )
+        selected_cancer = alt.Chart(data).mark_line().encode(
+            x="YEAR",
+            y=alt.Y("MIR", scale=alt.Scale(domain=[0.0, 3.3])),
+            detail="SITE",
+            tooltip="SITE",
+            color="SITE"
+        ).add_selection(
+            cancer_select
+        ).transform_filter(
+            cancer_select
+        )
+        (background_chart + selected_cancer).save("test_cancer_plot.html")
