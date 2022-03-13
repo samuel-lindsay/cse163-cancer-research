@@ -24,9 +24,18 @@ def state_change(data):
     return state_change
 
 
-def prepare_shp(by_county, counties):
+def create_interactive(by_county, counties):
+    conds_for_by_county = (by_county["STATE"] != "AK") & \
+                          (by_county["STATE"] != "HI") # & \
+                          # (by_county["RACE"].notna())
+    states_for_counties = (counties["STUSPS"] != "AK") & \
+                          (counties["STUSPS"] != "HI")
+    by_county = by_county[conds_for_by_county]
+    counties = counties[states_for_counties]
+
     by_county_c = by_county[["AREA", "RACE", "SITE", "YEAR", "EVENT_TYPE",
-                             "AGE_ADJUSTED_RATE", "SEX"]].copy()
+                             "AGE_ADJUSTED_RATE", "SEX", "STATE"]].copy()
+    print(len(by_county[by_county_c["RACE"].isnull()]))
     counties_c = counties[["GEOID", "NAMELSAD", "STUSPS", "STATE_NAME",
                            "geometry"]].copy()
     by_county_c = Utils.remove_rows(data=by_county_c,
@@ -34,9 +43,7 @@ def prepare_shp(by_county, counties):
     by_county_c = Utils.get_mir(data=by_county_c, 
                                 on=['AREA', 'RACE', 'SEX', 'SITE', 'YEAR'],
                                 rate_col='AGE_ADJUSTED_RATE')
-    prepared_shp = Utils.clean_join_shp(by_county=by_county_c,
-                                        counties=counties_c)
-    return prepared_shp
+    Utils.generate_map(by_county_c, counties_c)
 
 
 def main():
@@ -50,13 +57,13 @@ def main():
     print("Smallest change in MIR: " + str(change.idxmin()) +
           " " + str(change.min()))
 
-    prepared_shp = prepare_shp(by_county, counties)
+    create_interactive(by_county, counties)
     # print(len(prepared_shp["MIR"]))
-    no_ak = prepared_shp["STUSPS"] != "AK"
-    no_hi = prepared_shp["STUSPS"] != "HI"
-    races = prepared_shp["RACE"] == "All Races"
-    sites = prepared_shp["SITE"] == "All Cancer Sites Combined"
-    sexes = prepared_shp["SEX"] == "Male and Female"
+    # no_ak = prepared_shp["STUSPS"] != "AK"
+    # no_hi = prepared_shp["STUSPS"] != "HI"
+    # races = prepared_shp["RACE"] == "All Races"
+    # sites = prepared_shp["SITE"] == "All Cancer Sites Combined"
+    # sexes = prepared_shp["SEX"] == "Male and Female"
     # mortality = prepared_shp["EVENT_TYPE"] == "Mortality"
     # test_plot = prepared_shp[all_races & all_cancer_sites & both_sexes & no_ak & no_hi]
     # test_plot.plot() #figsize=(250, 500))
@@ -65,12 +72,6 @@ def main():
     # print(prepared_shp[prepared_shp["STUSPS"] == "NE"][["RACE", "MIR"]].unique())
 
     # print(len(prepared_shp[no_ak & no_hi & both_sexes & all_sites]))
-
-    alt \
-        .Chart(prepared_shp[no_ak & no_hi & sexes & sites & races]) \
-        .mark_geoshape().encode(
-        color='MIR:Q'
-    ).save("alt_test.html")
 
 
 if __name__ == "__main__":
