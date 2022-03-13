@@ -76,33 +76,23 @@ class Utils:
         races = [str(race) for race in by_county["RACE"].unique()]
         prepared_shp, states_shp = Utils._clean_join_shp(by_county, counties)
 
-        # races = prepared_shp["RACE"] == "All Races"
-        # sites = prepared_shp["SITE"] == "All Cancer Sites Combined"
-        # sexes = prepared_shp["SEX"] == "Male and Female"
-        # prepared_shp = prepared_shp[races & sites & sexes]
-
         alt.data_transformers.disable_max_rows()
         scale = alt.Scale(domain=[0.10, 1.12])
+
+        race_dropdown = alt.binding_select(options=races)
+        race_select = alt.selection_single(fields=["RACE"], bind=race_dropdown, init={"RACE":races[0]})
 
         background = alt.Chart(states_shp) \
                         .mark_geoshape(fill="lightgray", stroke="white")
 
-        race_dropdown = alt.binding_select(options=races, name="Race")
-        race_select = alt.selection_single(bind=race_dropdown,
-                                           fields=["Race", "geometry"])
+        mir_highlight = alt.Chart(prepared_shp).mark_geoshape().encode(
+            color=alt.Color("MIR:Q", scale=scale)
+        ).add_selection(
+            race_select
+        ).transform_filter(
+            race_select
+        )
 
-        mir_highlight = alt.Chart(prepared_shp) \
-           .mark_geoshape() \
-           .encode(color = alt.Color("MIR:Q", scale=scale)) \
-           .add_selection(race_select) \
-           .transform_filter(race_select) \
-           .properties(title="Mortality Incidence Rate for US counties (2014-2018)")
-
-        # filter_races = mir_highlight.add_selection(race_select) \
-        #                             .transform_filter(race_select) \
-        #                             .properties(title="Race Filtering")
-
-        # (background + mir_highlight).save("alt_test.html")
         (background + mir_highlight).save("interactive_test.html")
 
     def make_state_plot(data):

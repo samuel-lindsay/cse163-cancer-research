@@ -1,6 +1,6 @@
 import pandas as pd
 import geopandas as gpd
-from utilities import Utils
+from Utilities import Utils
 
 
 AREA_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYAREA.TXT"
@@ -61,7 +61,8 @@ def create_interactive(by_county, counties):
 
     by_county_c = by_county[["AREA", "RACE", "SITE", "YEAR", "EVENT_TYPE",
                              "AGE_ADJUSTED_RATE", "SEX", "STATE"]].copy()
-    print(len(by_county[by_county_c["RACE"].isnull()]))
+    by_county_c = by_county_c[(by_county_c["SITE"] == "All Cancer Sites Combined") 
+                              & (by_county_c["SEX"] == "Male and Female")]
     counties_c = counties[["GEOID", "NAMELSAD", "STUSPS", "STATE_NAME",
                            "geometry"]].copy()
     by_county_c = Utils.remove_rows(data=by_county_c,
@@ -90,22 +91,7 @@ def main():
     print("Smallest change_by_cancer in MIR: " + str(change_by_cancer.idxmin()) +
           " " + str(change_by_cancer.min()))
 
-    # create_interactive(by_county, counties)
-    # print(len(prepared_shp["MIR"]))
-    # no_ak = prepared_shp["STUSPS"] != "AK"
-    # no_hi = prepared_shp["STUSPS"] != "HI"
-    # races = prepared_shp["RACE"] == "All Races"
-    # sites = prepared_shp["SITE"] == "All Cancer Sites Combined"
-    # sexes = prepared_shp["SEX"] == "Male and Female"
-    # mortality = prepared_shp["EVENT_TYPE"] == "Mortality"
-    # test_plot = prepared_shp[all_races & all_cancer_sites & both_sexes & no_ak & no_hi]
-    # test_plot.plot() #figsize=(250, 500))
-    # prepared_shp[no_ak & no_hi & both_sexes].plot(figsize=(50, 20))
-    # plt.savefig("test_plot2.png")
-    # print(prepared_shp[prepared_shp["STUSPS"] == "NE"][["RACE", "MIR"]].unique())
-
-    # print(len(prepared_shp[no_ak & no_hi & both_sexes & all_sites]))
-
+    create_interactive(by_county, counties)
 
 if __name__ == "__main__":
     main()
