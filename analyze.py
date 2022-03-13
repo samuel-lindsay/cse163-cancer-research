@@ -44,7 +44,7 @@ def cancer_change(data):
                          rate_col='AGE_ADJUSTED_RATE')
     data = data[["YEAR", "MIR", "SITE"]]
     data = data.sort_values(["YEAR"])
-    Utils.make_state_plot(data)
+    Utils.make_cancer_plot(data)
     grouped = data.groupby(by="SITE")
     cancer_change = (grouped['MIR'].last() - grouped['MIR'].first()) / grouped['MIR'].first()
     return cancer_change

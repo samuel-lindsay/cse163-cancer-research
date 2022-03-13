@@ -102,19 +102,19 @@ class Utils:
         chart out of the changes in MIR among all 50 states and DC from
         1999 to 2018.
         """
+        data = data[data["YEAR"] != "2014-2018"]
         data = data.sort_values(['YEAR'])
         states = data["AREA"].unique()
         states.sort()
         state_dropdown = alt.binding_select(options=states)
         state_select = alt.selection_single(fields=['AREA'], bind=state_dropdown, name="State")
-        # state_color_condition = alt.condition(state_select, alt.Color('AREA:N', legend=None), alt.value('lightgray'))
         background_chart = alt.Chart(data).mark_line().encode(
             x='YEAR',
-            y='MIR',
+            y=alt.Y('MIR', scale=alt.Scale(domain=[0.275, 0.55])),
             detail="AREA",
             tooltip="AREA",
             color = alt.value("lightgray")
-        ).add_selection(state_select)
+        )
         selected_state = alt.Chart(data).mark_line().encode(
             x='YEAR',
             y=alt.Y('MIR', scale=alt.Scale(domain=[0.275, 0.55])),
@@ -135,6 +135,7 @@ class Utils:
         interactive altair line chart out of the changes in MIR among
         all kinds of cancers from 1999 to 2018.
         """
+        data = data[data["YEAR"] != "2014-2018"]
         data = data.sort_values(["YEAR"])
         cancers = data["SITE"].unique()
         cancers.sort()
@@ -142,16 +143,12 @@ class Utils:
         cancer_select = alt.selection_single(fields=["SITE"],
                                              bind=cancer_dropdown,
                                              name="Cancer Type")
-        cancer_color_condition = alt.condition(cancer_select,
-                                               alt.COlor("SITE:N", legend=None),
-                                               alt.value("lightgray"))
         background_chart = alt.Chart(data).mark_line().encode(
             x="YEAR",
             y="MIR",
             detail="SITE",
             tooltip="SITE",
-        ).add_selection(cancer_select).encode(
-            color=cancer_color_condition
+            color = alt.value("lightgray")
         )
         selected_cancer = alt.Chart(data).mark_line().encode(
             x="YEAR",
