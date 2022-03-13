@@ -104,3 +104,35 @@ class Utils:
 
         # (background + mir_highlight).save("alt_test.html")
         (background + mir_highlight).save("interactive_test.html")
+
+    def make_state_plot(data):
+        """
+        Takes in state-level data that has already been cleaned, filtered,
+        and given an MIR column. Then creates an altair chart out of
+        """
+        data = data.sort_values(['YEAR'])
+        states = data["AREA"].unique()
+        states.sort()
+        state_dropdown = alt.binding_select(options=states)
+        state_select = alt.selection_single(fields=['AREA'], bind=state_dropdown, name="State")
+        state_color_condition = alt.condition(state_select, alt.Color('AREA:N', legend=None), alt.value('lightgray'))
+        background_chart = alt.Chart(data).mark_line().encode(
+            x='YEAR',
+            y='MIR',
+            detail="AREA",
+            tooltip="AREA",
+        ).add_selection(state_select).encode(
+            color=state_color_condition
+        )
+        selected_state = alt.Chart(data).mark_line().encode(
+            x='YEAR',
+            y=alt.Y('MIR', scale=alt.Scale(domain=[0.275, 0.55])),
+            detail="AREA",
+            tooltip="AREA",
+            color="AREA"
+        ).add_selection(
+            state_select
+        ).transform_filter(
+            state_select
+        )
+        return background_chart + selected_state
