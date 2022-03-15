@@ -10,8 +10,6 @@ from cse163_utils import assert_equals
 from utilities import Utils
 import pandas as pd
 
-MIR_TEST_PATH = "testing_data/get_mir_test_data.txt"
-FILTER_TEST_PATH = "testing_data/filter_data.txt"
 
 def test_get_mir():
     """
@@ -20,7 +18,7 @@ def test_get_mir():
     should return a float. There will be no other type of return due to the
     cleaning form remove_rows and inner join type.
     """
-    data = pd.read_csv(MIR_TEST_PATH)
+    data = pd.read_csv("testing_data\\get_mir_test_data.txt")
     mir_data = Utils.get_mir(data, on=["AREA", "YEAR", "SITE"],
                              rate_col="AGE_ADJUSTED_RATE")
     assert_equals(3, len(mir_data))
@@ -52,7 +50,7 @@ def test_filter_sex_site_race():
     _race function should only include rows in a dataset that represent data
     for all cancer sites, all sexes, and all races.
     """
-    data = pd.read_csv(FILTER_TEST_PATH)
+    data = pd.read_csv("testing_data\\filter_data.txt")
 
     filter_sex = data["SEX"] == "Female"
     filter_site = data["SITE"] == "Pancreas"
@@ -79,7 +77,7 @@ def test_filter_alaska_hawaii():
     should exclude all rows representing data from Alaska or Hawaii.
     """
 
-    data = pd.read_csv(FILTER_TEST_PATH)
+    data = pd.read_csv("testing_data\\filter_data.txt")
     filtered = data.loc[:, 0:4]
     assert_equals(filtered, Utils.filter_alaska_hawaii(data))
 
