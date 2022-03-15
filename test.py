@@ -11,7 +11,7 @@ from utilities import Utils
 import pandas as pd
 
 MIR_TEST_PATH = "testing_data/get_mir_test_data.txt"
-
+FILTER_TEST_PATH = "testing_data/filter_data.txt"
 
 def test_get_mir():
     """
@@ -47,6 +47,24 @@ def test_filter_sex_site_race():
     _race function should only include rows in a dataset that represent data
     for all cancer sites, all sexes, and all races.
     """
+    data = pd.read_csv(FILTER_TEST_PATH)
+
+    filter_sex = data["SEX"] == "Female"
+    filter_site = data["SITE"] == "Pancreas"
+    filter_race = data["RACE"] == "Hispanic"
+
+    assert_equals(data[filter_sex],
+                  Utils.filter_sex_site_race(sex="Female", site=None,
+                                             race=None))
+    assert_equals(data[filter_site],
+                  Utils.filter_sex_site_race(sex=None, site="Pancreas",
+                                             race=None))
+    assert_equals(data[filter_race],
+                  Utils.filter_sex_site_race(sex=None, site=None,
+                                             race="Hispanic"))
+    assert_equals(data[filter_sex & filter_site & filter_race],
+                  Utils.filter_sex_site_race(sex="Female", site="Pancreas",
+                                             race="Hispanic"))
     return None
 
 
@@ -56,4 +74,7 @@ def test_filter_alaska_hawaii():
     the function returns unexpected results. The returned DataFrame object
     should exclude all rows representing data from Alaska or Hawaii.
     """
+    data = pd.read_csv(FILTER_TEST_PATH)
+    filtered = data.loc[:, 0:4]
+    assert_equals(filtered, Utils.filter_alaska_hawaii(data))
     return None

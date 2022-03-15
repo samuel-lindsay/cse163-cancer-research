@@ -1,0 +1,8 @@
+AREA|AGE_ADJUSTED_CI_LOWER|AGE_ADJUSTED_CI_UPPER|AGE_ADJUSTED_RATE|COUNT|EVENT_TYPE|POPULATION|RACE|SEX|SITE|YEAR|CRUDE_CI_LOWER|CRUDE_CI_UPPER|CRUDE_RATE
+Alabama|143.1|151.6|147.3|4754|Mortality|2494707|All Races|Female|All Cancer Sites Combined|2014|185.2|196.1|190.6
+Illinois|3.5|8.4|5.7|27|Mortality|1653300|Hispanic|Female|Pancreas|2002|1.1|2.4|1.6
+Nevada|1.0|17.5|4.8|~|Incidence|57989|Asian/Pacific Islander|Male|Thyroid|2001|1.1|15.1|5
+Rhode Island|10.6|17.6|13.8|65|Mortality|499678|All Races|Male|Pancreas|1999|10.0|16.6|13.0
+Washington|10.0|12.2|11.0|385|Incidence|3247800|All Races|Female|Leukemias|2007|10.7|13.1|11.9
+Hawaii|3.2|6.6|4.7|33|Mortality|609189|All Races|Female|Liver and Intrahepatic Bile Duct|2001|3.7|7.6|5.4
+Alaska|141.3|178.8|159.3|317|Mortality|309633|All Races|Female|All Cancer Sites Combined|2002|91.4|114.3|102.4
