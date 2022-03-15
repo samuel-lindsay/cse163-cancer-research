@@ -34,7 +34,7 @@ def test_remove_rows():
     rows with any character that represents a None value. If all rows are
     filled with meaningful entry, remove_rows does nothing.
     """
-    test_df = pd.read_csv("\\test_data\\remove_rows_test_data.txt")
+    test_df = pd.read_csv("testing_data\\remove_rows_test_data.txt")
     exp_df1 = test_df.loc[[0, 2], :]
     assert_equals(exp_df1, Utils.remove_rows(test_df, ["+", ".", "~", "-"]))
     exp_df2 = test_df.loc[0:4, :]
@@ -50,23 +50,24 @@ def test_filter_sex_site_race():
     _race function should only include rows in a dataset that represent data
     for all cancer sites, all sexes, and all races.
     """
-    data = pd.read_csv("testing_data\\filter_data.txt")
+    data = pd.read_csv("testing_data\\filter_data.txt", sep="|")
 
     filter_sex = data["SEX"] == "Female"
     filter_site = data["SITE"] == "Pancreas"
     filter_race = data["RACE"] == "Hispanic"
 
     assert_equals(data[filter_sex],
-                  Utils.filter_sex_site_race(sex="Female", site=None,
+                  Utils.filter_sex_site_race(data, sex="Female", site=None,
                                              race=None))
     assert_equals(data[filter_site],
-                  Utils.filter_sex_site_race(sex=None, site="Pancreas",
+                  Utils.filter_sex_site_race(data, sex=None, site="Pancreas",
                                              race=None))
     assert_equals(data[filter_race],
-                  Utils.filter_sex_site_race(sex=None, site=None,
+                  Utils.filter_sex_site_race(data, sex=None, site=None,
                                              race="Hispanic"))
     assert_equals(data[filter_sex & filter_site & filter_race],
-                  Utils.filter_sex_site_race(sex="Female", site="Pancreas",
+                  Utils.filter_sex_site_race(data, sex="Female",
+                                             site="Pancreas",
                                              race="Hispanic"))
 
 
@@ -76,10 +77,9 @@ def test_filter_alaska_hawaii():
     the function returns unexpected results. The returned DataFrame object
     should exclude all rows representing data from Alaska or Hawaii.
     """
-
-    data = pd.read_csv("testing_data\\filter_data.txt")
-    filtered = data.loc[:, 0:4]
-    assert_equals(filtered, Utils.filter_alaska_hawaii(data))
+    data = pd.read_csv("testing_data\\filter_data.txt", sep="|")
+    filtered = data.loc[0:4, :]
+    assert_equals(filtered, Utils.filter_alaska_hawaii(data, "AREA"))
 
 
 def main():

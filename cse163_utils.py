@@ -1,4 +1,5 @@
 import math
+import pandas as pd
 
 
 def check_approx_equals(expected, received):
@@ -23,6 +24,8 @@ def check_approx_equals(expected, received):
                     for v1, v2 in zip(expected, received)])
         elif type(expected) == float:
             return math.isclose(expected, received, abs_tol=0.001)
+        elif type(expected) == pd.DataFrame:
+            return expected.equals(received)
         else:
             return expected == received
     except Exception as e:
