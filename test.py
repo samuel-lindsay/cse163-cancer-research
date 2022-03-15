@@ -21,13 +21,12 @@ def test_get_mir():
     cleaning form remove_rows and inner join type.
     """
     data = pd.read_csv(MIR_TEST_PATH)
-    mir_data = Utils.get_mir(data, on=["AREA", "YEAR", "SITE"], 
+    mir_data = Utils.get_mir(data, on=["AREA", "YEAR", "SITE"],
                              rate_col="AGE_ADJUSTED_RATE")
     assert_equals(3, len(mir_data))
     assert_equals(0.450831, mir_data["MIR"][0])
     assert_equals(0.448444, mir_data["MIR"][1])
     assert_equals(0.440550, mir_data["MIR"][2])
-    return None
 
 
 def test_remove_rows():
@@ -37,7 +36,13 @@ def test_remove_rows():
     rows with any character that represents a None value. If all rows are
     filled with meaningful entry, remove_rows does nothing.
     """
-    return None
+    test_df = pd.read_csv("\\test_data\\remove_rows_test_data.txt")
+    exp_df1 = test_df.loc[[0, 2], :]
+    assert_equals(exp_df1, Utils.remove_rows(test_df, ["+", ".", "~", "-"]))
+    exp_df2 = test_df.loc[0:4, :]
+    assert_equals(exp_df2, Utils.remove_rows(test_df, ["+"]))
+    exp_df3 = test_df
+    assert_equals(exp_df3, Utils.remove_rows(test_df, []))
 
 
 def test_filter_sex_site_race():
@@ -65,7 +70,6 @@ def test_filter_sex_site_race():
     assert_equals(data[filter_sex & filter_site & filter_race],
                   Utils.filter_sex_site_race(sex="Female", site="Pancreas",
                                              race="Hispanic"))
-    return None
 
 
 def test_filter_alaska_hawaii():
@@ -74,7 +78,18 @@ def test_filter_alaska_hawaii():
     the function returns unexpected results. The returned DataFrame object
     should exclude all rows representing data from Alaska or Hawaii.
     """
+
     data = pd.read_csv(FILTER_TEST_PATH)
     filtered = data.loc[:, 0:4]
     assert_equals(filtered, Utils.filter_alaska_hawaii(data))
-    return None
+
+
+def main():
+    test_get_mir()
+    test_remove_rows()
+    test_filter_sex_site_race()
+    test_filter_alaska_hawaii()
+
+
+if __name__ == '__main__':
+    main()
