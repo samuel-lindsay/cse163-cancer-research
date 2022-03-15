@@ -10,8 +10,6 @@ from cse163_utils import assert_equals
 from utilities import Utils
 import pandas as pd
 
-MIR_TEST_PATH = "testing_data/get_mir_test_data.txt"
-
 
 def test_get_mir():
     """
@@ -20,13 +18,6 @@ def test_get_mir():
     should return a float. There will be no other type of return due to the
     cleaning form remove_rows and inner join type.
     """
-    data = pd.read_csv(MIR_TEST_PATH)
-    mir_data = Utils.get_mir(data, on=["AREA", "YEAR", "SITE"], 
-                             rate_col="AGE_ADJUSTED_RATE")
-    assert_equals(3, len(mir_data))
-    assert_equals(0.450831, mir_data["MIR"][0])
-    assert_equals(0.448444, mir_data["MIR"][1])
-    assert_equals(0.440550, mir_data["MIR"][2])
     return None
 
 
