@@ -98,16 +98,16 @@ def main():
 
     # Question 1 - Which state had the greatest change?
     change_by_state = state_change(by_area)
-    print("Greatest change_by_state in MIR: " + str(change_by_state.idxmax()) +
-          " " + str(change_by_state.max()))
-    print("Smallest change_by_state in MIR: " + str(change_by_state.idxmin()) +
-          " " + str(change_by_state.min()))
+    print("Most positive change_by_state in MIR: " +
+          str(change_by_state.idxmax()) + " " + str(change_by_state.max()))
+    print("Most negative change_by_state in MIR: " +
+          str(change_by_state.idxmin()) + " " + str(change_by_state.min()))
 
     # Question 2 - Which type of cancer had the greatest change?
     change_by_cancer = cancer_change(by_site)
-    print("Greatest change_by_cancer in MIR: "
+    print("Most positive change_by_cancer in MIR: "
           + str(change_by_cancer.idxmax()) + " " + str(change_by_cancer.max()))
-    print("Smallest change_by_cancer in MIR: "
+    print("Most negative change_by_cancer in MIR: "
           + str(change_by_cancer.idxmin()) + " " + str(change_by_cancer.min()))
 
     # Question 3 - In the same county, what is the difference in racial groups?
