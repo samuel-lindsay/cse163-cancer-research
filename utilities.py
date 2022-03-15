@@ -1,7 +1,5 @@
-from matplotlib.pyplot import legend
-import pandas as pd
-import geopandas as gpd
 import altair as alt
+import pandas as pd
 
 
 class Utils:
@@ -80,7 +78,8 @@ class Utils:
         scale = alt.Scale(domain=[0.10, 1.12])
 
         race_dropdown = alt.binding_select(options=races)
-        race_select = alt.selection_single(fields=["RACE"], bind=race_dropdown, init={"RACE":races[0]})
+        race_select = alt.selection_single(fields=["RACE"], bind=race_dropdown,
+                                           init={"RACE": races[0]})
 
         background = alt.Chart(states_shp) \
                         .mark_geoshape(fill="lightgray", stroke="white")
@@ -107,13 +106,14 @@ class Utils:
         states = data["AREA"].unique()
         states.sort()
         state_dropdown = alt.binding_select(options=states)
-        state_select = alt.selection_single(fields=['AREA'], bind=state_dropdown, name="State")
+        state_select = alt.selection_single(fields=['AREA'],
+                                            bind=state_dropdown, name="State")
         background_chart = alt.Chart(data).mark_line().encode(
             x='YEAR',
             y=alt.Y('MIR', scale=alt.Scale(domain=[0.275, 0.55])),
             detail="AREA",
             tooltip="AREA",
-            color = alt.value("lightgray")
+            color=alt.value("lightgray")
         )
         selected_state = alt.Chart(data).mark_line().encode(
             x='YEAR',
@@ -148,7 +148,7 @@ class Utils:
             y="MIR",
             detail="SITE",
             tooltip="SITE",
-            color = alt.value("lightgray")
+            color=alt.value("lightgray")
         )
         selected_cancer = alt.Chart(data).mark_line().encode(
             x="YEAR",
@@ -162,3 +162,23 @@ class Utils:
             cancer_select
         )
         (background_chart + selected_cancer).save("test_cancer_plot.html")
+
+    def filter_sex_site(data, site="All Cancer Sites Combined",
+                        sex="Male and Female"):
+        """
+        Takes in cancer data as well as a site and sex value.
+        Filters data by site and sex, then returns filtered data.
+        """
+        site_filter = data[data["SITE"] == site]
+        sex_filter = data[data["SEX"] == sex]
+        return data[site_filter & sex_filter]
+
+    def filter_alaska_hawaii(data, colname):
+        """
+        Takes in cancer data, returns data without Alaska or Hawaii.
+        Also takes in a column name which specifies which columns contains
+        the state data (in its USPS abbreviation)
+        """
+        ak_filter = data[data[colname] != "AK"]
+        hi_filter = data[data[colname] != "HI"]
+        return data[ak_filter & hi_filter]
