@@ -1,6 +1,7 @@
 import pandas as pd
 import geopandas as gpd
 from utilities import Utils
+from plots import CancerPlots
 
 
 AREA_DATA_PATH = "data\\USCS-1999-2018-ASCII\\BYAREA.TXT"
@@ -20,7 +21,7 @@ def state_change(data):
                          rate_col='AGE_ADJUSTED_RATE')
     data = data[["AREA", "YEAR", "MIR"]]
     data = data.sort_values(["YEAR"])
-    Utils.make_state_plot(data)
+    CancerPlots.make_state_plot(data)
     grouped = data.groupby(by="AREA")
     state_change = (grouped['MIR'].last() - grouped['MIR'].first()) \
         / grouped['MIR'].first()
@@ -42,7 +43,7 @@ def cancer_change(data):
                          rate_col='AGE_ADJUSTED_RATE')
     data = data[["YEAR", "MIR", "SITE"]]
     data = data.sort_values(["YEAR"])
-    Utils.make_cancer_plot(data)
+    CancerPlots.make_cancer_plot(data)
     grouped = data.groupby(by="SITE")
     cancer_change = (grouped['MIR'].last() - grouped['MIR'].first()) \
         / grouped['MIR'].first()
@@ -63,7 +64,7 @@ def create_interactive(by_county, counties):
     by_county_c = Utils.get_mir(data=by_county_c,
                                 on=['AREA', 'RACE', 'SEX', 'SITE', 'YEAR'],
                                 rate_col='AGE_ADJUSTED_RATE')
-    Utils.generate_map(by_county_c, counties_c)
+    CancerPlots.generate_map(by_county_c, counties_c)
 
 
 def main():
