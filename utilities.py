@@ -1,8 +1,18 @@
+"""
+Sam Lindsay and Peter Xu
+CSE 163
+This file defines the Utils class, which contains methods related to cleaning
+and preparing the cancer data set.
+"""
+
 import pandas as pd
 
 
 class Utils:
-
+    """
+    Contains functions that cleans and prepares the cancer data for analysis
+    and visualization.
+    """
     def get_mir(data, on, rate_col):
         """
         Takes in the already cleaned data. Given a set of columns to merge
@@ -43,15 +53,14 @@ class Utils:
             filters.append(data["SEX"] == sex)
         if race is not None:
             filters.append(data["RACE"] == race)
-        
+
         if len(filters) == 0:
             return data
         else:
-            final_filter = filters[0]  # need a base filter
+            final_filter = filters[0]
             for f in filters:
                 final_filter = final_filter & f
             return data[final_filter]
-
 
     def filter_alaska_hawaii(data, colname):
         """

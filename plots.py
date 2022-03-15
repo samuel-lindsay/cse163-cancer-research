@@ -1,7 +1,17 @@
+"""
+Sam Lindsay and Peter Xu
+CSE 163
+This file contains the definition for CancerPlots, the class which contains all
+of the functions related to creating altair visualizations for the data.
+"""
 import altair as alt
 
 
 class CancerPlots:
+    """
+    CancerPlots is responsible for creating the altair visualizations for
+    the cancer data.
+    """
 
     def _strip_geoid(area):
         """

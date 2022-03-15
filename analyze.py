@@ -1,3 +1,9 @@
+"""
+Sam Lindsay and Peter Xu
+CSE 163
+Top level program that is used to analyze the cancer data set. Loads the data,
+cleans it, then creates visualizations.
+"""
 import pandas as pd
 import geopandas as gpd
 from utilities import Utils
@@ -12,6 +18,11 @@ SHP_DATA_PATH = "data\\2020_us_county_shp\\cb_2020_us_county_20m.shp"
 
 def state_change(data):
     """
+    Takes in a DataFrame data and returns a list of MIR percent changes between
+    1999 and 2018 for each state. Also creates a plot showing the MIR for each
+    state over time and saves it to "state_improvement_plot.html".
+    Only considers data for all races, sexes, and types of cancer combined in
+    order to best compare different states.
     """
     data = Utils.filter_sex_site_race(data)
     data = data[['AREA', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE', 'YEAR']]
@@ -31,7 +42,9 @@ def state_change(data):
 def cancer_change(data):
     """
     This function takes in a DataFrame data and returns a list of MIR
-    percentage change between 2018 and 1999 for each type of cancer.
+    percentage change between 1999 and 2018 for each type of cancer.
+    Also creates a plot showing the MIR of all types of cancer over the
+    time period and saves it to "cancer_type_plot.html".
     Here, we only consider the data for all races and all sexes combined
     as they cover the most portion of population in our dataset.
     """
@@ -51,6 +64,13 @@ def cancer_change(data):
 
 
 def create_interactive(by_county, counties):
+    """
+    Takes in two data sets: "by_county" is a DataFrame containing cancer data
+    that is broken down by county and "counties" is geospatial data defining
+    the shape of each county. Does not return anything, but it does create
+    an interactive visualization showing the MIR in each county filtered by
+    race. This visualization is saved to "state_race_map.html".
+    """
     by_county = Utils.filter_alaska_hawaii(by_county, "STATE")
     counties = Utils.filter_alaska_hawaii(counties, "STUSPS")
 
@@ -74,18 +94,21 @@ def main():
     by_county = pd.read_csv(COUNTY_DATA_PATH, sep="|", low_memory=False)
     counties = gpd.read_file(SHP_DATA_PATH)
 
+    # Question 1 - Which state had the greatest change?
     change_by_state = state_change(by_area)
     print("Greatest change_by_state in MIR: " + str(change_by_state.idxmax()) +
           " " + str(change_by_state.max()))
     print("Smallest change_by_state in MIR: " + str(change_by_state.idxmin()) +
           " " + str(change_by_state.min()))
 
+    # Question 2 - Which type of cancer had the greatest change?
     change_by_cancer = cancer_change(by_site)
     print("Greatest change_by_cancer in MIR: "
           + str(change_by_cancer.idxmax()) + " " + str(change_by_cancer.max()))
     print("Smallest change_by_cancer in MIR: "
           + str(change_by_cancer.idxmin()) + " " + str(change_by_cancer.min()))
 
+    # Question 3 - In the same county, what is the difference in racial groups?
     create_interactive(by_county, counties)
 
 
