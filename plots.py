@@ -1,5 +1,4 @@
 import altair as alt
-from utilities import Utils
 
 
 class CancerPlots:
@@ -20,15 +19,8 @@ class CancerPlots:
         rows from two dataset on their county names for further plotting
         operations.
         """
-        # states_for_by_county = (by_county["STATE_x"] != "AK") & \
-        #                        (by_county["STATE_x"] != "HI")
-        # states_for_counties = (counties["STUSPS"] != "AK") & \
-        #                       (counties["STUSPS"] != "HI")
-        # by_county = by_county[states_for_by_county]
-        # counties = counties[states_for_counties]
-
         by_county.loc[:, "geoid"] = by_county.loc[:, "AREA"] \
-                                             .apply(Utils._strip_geoid)
+                                             .apply(CancerPlots._strip_geoid)
         by_county = by_county.astype({"geoid": "float32"})
         counties = counties.astype({"GEOID": "float32"})
         prepared_shp = counties.merge(by_county, left_on="GEOID",
@@ -46,13 +38,15 @@ class CancerPlots:
         is responsive to selecting different race.
         """
         races = [str(race) for race in by_county["RACE"].unique()]
-        prepared_shp, states_shp = Utils._clean_join_shp(by_county, counties)
+        prepared_shp, states_shp = CancerPlots._clean_join_shp(by_county,
+                                                               counties)
 
         alt.data_transformers.disable_max_rows()
         scale = alt.Scale(domain=[0.10, 1.12])
 
         race_dropdown = alt.binding_select(options=races)
-        race_select = alt.selection_single(fields=["RACE"], bind=race_dropdown,
+        race_select = alt.selection_single(fields=["RACE"],
+                                           bind=race_dropdown, name="Race",
                                            init={"RACE": races[0]})
 
         background = alt.Chart(states_shp) \

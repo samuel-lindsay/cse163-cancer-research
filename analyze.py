@@ -13,7 +13,7 @@ SHP_DATA_PATH = "data\\2020_us_county_shp\\cb_2020_us_county_20m.shp"
 def state_change(data):
     """
     """
-    data = Utils.filter_sex_site(data)
+    data = Utils.filter_sex_site_race(data)
     data = data[['AREA', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE', 'YEAR']]
     data = Utils.remove_rows(data=data, chars=['~', '+', '.', '-'])
     data = Utils.get_mir(data=data,
@@ -35,9 +35,9 @@ def cancer_change(data):
     Here, we only consider the data for all races and all sexes combined
     as they cover the most portion of population in our dataset.
     """
-    data = Utils.filter_sex_site(data)
-    data = data[['SITE', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE', 'YEAR']]
+    data = Utils.filter_sex_site_race(data, site=None)
     data = Utils.remove_rows(data=data, chars=['~', '+', '.', '-'])
+    data = data[['SITE', 'AGE_ADJUSTED_RATE', 'EVENT_TYPE', 'YEAR']]
     data = Utils.get_mir(data=data,
                          on=['SITE', 'YEAR'],
                          rate_col='AGE_ADJUSTED_RATE')
@@ -53,12 +53,13 @@ def cancer_change(data):
 def create_interactive(by_county, counties):
     by_county = Utils.filter_alaska_hawaii(by_county, "STATE")
     counties = Utils.filter_alaska_hawaii(counties, "STUSPS")
-    by_county_c = Utils.filter_sex_site(by_county)
 
     by_county_c = by_county[["AREA", "RACE", "SITE", "YEAR", "EVENT_TYPE",
                              "AGE_ADJUSTED_RATE", "SEX", "STATE"]].copy()
+    by_county_c = Utils.filter_sex_site_race(by_county, race=None)
     counties_c = counties[["GEOID", "NAMELSAD", "STUSPS", "STATE_NAME",
                            "geometry"]].copy()
+
     by_county_c = Utils.remove_rows(data=by_county_c,
                                     chars=['+', '~', '.', '-'])
     by_county_c = Utils.get_mir(data=by_county_c,

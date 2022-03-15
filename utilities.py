@@ -29,15 +29,29 @@ class Utils:
             check = check & (data != c)
         return data[check.all(1)]
 
-    def filter_sex_site(data, site="All Cancer Sites Combined",
-                        sex="Male and Female"):
+    def filter_sex_site_race(data, site="All Cancer Sites Combined",
+                             sex="Male and Female", race="All Races"):
         """
-        Takes in cancer data as well as a site and sex value.
-        Filters data by site and sex, then returns filtered data.
+        Takes in cancer data as well as a site, sex, and race value.
+        If any of site, sex, and race are not None, then the related column
+        is filtered by the given value. Returns filtered data.
         """
-        site_filter = data["SITE"] == site
-        sex_filter = data["SEX"] == sex
-        return data[site_filter & sex_filter]
+        filters = []
+        if site is not None:
+            filters.append(data["SITE"] == site)
+        if sex is not None:
+            filters.append(data["SEX"] == sex)
+        if race is not None:
+            filters.append(data["RACE"] == race)
+        
+        if len(filters) == 0:
+            return data
+        else:
+            final_filter = filters[0]  # need a base filter
+            for f in filters:
+                final_filter = final_filter & f
+            return data[final_filter]
+
 
     def filter_alaska_hawaii(data, colname):
         """
