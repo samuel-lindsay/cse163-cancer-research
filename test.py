@@ -28,7 +28,13 @@ def test_remove_rows():
     rows with any character that represents a None value. If all rows are
     filled with meaningful entry, remove_rows does nothing.
     """
-    return None
+    test_df = pd.read_csv("\\test_data\\remove_rows_test_data.txt")
+    exp_df1 = test_df.loc[[0, 2], :]
+    assert_equals(exp_df1, Utils.remove_rows(test_df, ["+", ".", "~", "-"]))
+    exp_df2 = test_df.loc[0:4, :]
+    assert_equals(exp_df2, Utils.remove_rows(test_df, ["+"]))
+    exp_df3 = test_df
+    assert_equals(exp_df3, Utils.remove_rows(test_df, []))
 
 
 def test_filter_sex_site_race():
@@ -48,3 +54,14 @@ def test_filter_alaska_hawaii():
     should exclude all rows representing data from Alaska or Hawaii.
     """
     return None
+
+
+def main():
+    test_get_mir()
+    test_remove_rows()
+    test_filter_sex_site_race()
+    test_filter_alaska_hawaii()
+
+
+if __name__ == '__main__':
+    main()

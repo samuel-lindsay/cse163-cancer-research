@@ -1,0 +1,7 @@
+,AREA,YEAR,AGE_ADJUSTED_RATE,SITE,EVENT_TYPE
+0,Alabama,1999,367.1,All Cancer Sites Combined,Incidence
+1,Alabama,1999,~,All Cancer Sites Combined,Mortality
+2,Alabama,2000,369.5,All Cancer Sites Combined,Incidence
+3,Alabama,2000,165.7,All -,Mortality
+4,Alabama,.,385.2,All Cancer Sites Combined,Incidence
+5,+,2001,169.7,All Cancer Sites Combined,Mortality

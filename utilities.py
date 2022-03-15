@@ -32,9 +32,12 @@ class Utils:
     def remove_rows(data, chars):
         """
         Filters rows based on a set of characters.
-        Used to clean out the 4 characters that are all used to represent
-        a NA value.
+        Used to clean out the characters that are all used to represent
+        a NA value. Return the original dataset if no characters is passed
+        in for row removal.
         """
+        if (len(chars) == 0) or (chars is None):
+            return data
         check = data != chars[0]
         for c in chars:
             check = check & (data != c)
