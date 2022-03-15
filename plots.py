@@ -68,6 +68,8 @@ class CancerPlots:
             race_select
         ).transform_filter(
             race_select
+        ).properties(
+            title="Cancer MIR per County from 2014-2018 by Race"
         )
 
         (background + mir_highlight).save("state_race_map.html")
@@ -103,6 +105,8 @@ class CancerPlots:
             state_select
         ).transform_filter(
             state_select
+        ).properties(
+            title="State MIR from 1999-2018"
         )
         (background_chart + selected_state).save("state_improvement_plot.html")
 
@@ -138,5 +142,7 @@ class CancerPlots:
             cancer_select
         ).transform_filter(
             cancer_select
+        ).properties(
+            title="Cancer Type MIRs from 1999-2018"
         )
         (background_chart + selected_cancer).save("cancer_type_plot.html")
