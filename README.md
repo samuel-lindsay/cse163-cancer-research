@@ -16,3 +16,6 @@ data sets. Specifically, the variables are:
         be in the same directory as the shape file!
 4. Run analyze.py.
 5. Observe the resulting html files in a web browser. Ensure that javascript is not blocked on your browser.
+
+## Note
+1. Please refer to `CSE163-ProjectReport` for introduction, background, methodology, and solution, etc. about this project.
